@@ -141,7 +141,19 @@ export class UserService {
     }
 }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
+async remove(id: string) {
+  const result = await this.userModel.findByIdAndDelete(id);
+
+  if (!result) {
+    throw new NotFoundException(`Library record with ID ${id} not found`);
+  
+  }  
+
+  return { message: `Library record with ID ${id} deleted successfully`,
+
+
+};
+} 
+  
 }
