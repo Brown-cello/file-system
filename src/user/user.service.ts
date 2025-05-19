@@ -124,10 +124,22 @@ export class UserService {
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
+  async update(id: string, createUserDto: CreateUserDto) {
+    const updateuser = await this.userModel.findById(id);
+    if (!updateuser) {
+      throw new NotFoundException(` record with ID ${id} not found`);
+    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+    const newupdateuser = await this.userModel.findByIdAndUpdate(id,updateuser);
+    const updated = await this.userModel.findOne({ where: { id } })
+    
+
+    return{
+      statuscode:200,
+      message:'link succesfully updated',
+      data:updated
+    }
+}
 
   remove(id: number) {
     return `This action removes a #${id} user`;
