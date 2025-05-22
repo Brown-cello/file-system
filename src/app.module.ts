@@ -5,7 +5,7 @@ import { UploadModule } from './upload/upload.module';
 import { UserModule } from './user/user.module';
 
 @Module({
-   imports: [UserModule,
+   imports: [UserModule,UploadModule,
         ConfigModule.forRoot({
       isGlobal: true
     }), 

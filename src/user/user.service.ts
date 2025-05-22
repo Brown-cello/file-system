@@ -155,5 +155,18 @@ async remove(id: string) {
 
 };
 } 
+
+async getUserWithUploads(userId: string): Promise<User> {
+  const user = await this.userModel
+    .findById(userId)
+    .populate('uploads') // Populate the uploads field with Upload documents
+    .exec();
+
+  if (!user) {
+    throw new NotFoundException('User not found.');
+  }
+
+  return user;
+}
   
 }

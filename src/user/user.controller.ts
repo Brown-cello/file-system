@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Res, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,6 +28,16 @@ export class UserController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
+  }
+
+  
+  @Get(':userId/uploads')
+  async getUserWithUploads(@Param('userId') userId: string) {
+    try {
+      return await this.userService.getUserWithUploads(userId);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
  

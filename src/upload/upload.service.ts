@@ -4,12 +4,15 @@ import { Readable } from 'stream';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UploadDocument } from './schemas/file.schema';
+import { User } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class UploadService {
-  constructor(@InjectModel('Upload') private readonly uploadModel: Model<UploadDocument>) {}
+  constructor(@InjectModel('Upload') private readonly uploadModel: Model<UploadDocument>,
+  @InjectModel('User') private readonly userModel: Model<User>
+) {}
 
-  async uploadFile(file: Express.Multer.File): Promise<UploadApiResponse> {
+  async uploadFile(file: Express.Multer.File,userId:string): Promise<UploadApiResponse> {
     if (!file) {
       throw new BadRequestException('No file provided.');
     }
@@ -49,7 +52,18 @@ export class UploadService {
               uploadedAt: new Date(),
             });
     
-            await uploadedFile.save(); // Save to MongoDB
+            const savedFile = await uploadedFile.save();
+
+            // Link the uploaded file to the user
+            const user = await this.userModel.findByIdAndUpdate(
+              userId,
+              { $push: { uploads: savedFile._id } }, // Add the file's ObjectId to the user's uploads array
+              { new: true }, // Return the updated user document
+            );
+
+            if (!user) {
+              throw new NotFoundException('User not found.');
+            }
             resolve(result); // Return the Cloudinary response
           } catch (dbError) {
             console.error('Database Save Error:', dbError);
