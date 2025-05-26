@@ -1,12 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-import { UploadDocument } from 'src/upload/schemas/file.schema';
-
+import { Document } from 'mongoose';
 
 @Schema()
 export class User extends Document {
   @Prop()
-  userName: string
+  userName: string;
 
   @Prop()
   email: string;
@@ -15,10 +13,7 @@ export class User extends Document {
   password: string;
 
   @Prop()
-  profilePictureUrl?: string;
-
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Upload' }] }) // Array of references to Upload documents
-  uploads: Types.Array<UploadDocument>;
+  profilePictureUrl: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

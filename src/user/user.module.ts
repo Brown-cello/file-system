@@ -6,14 +6,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as dotenv from 'dotenv'
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { CloudinaryModule } from 'src/cloudinary/coudinary.module';
+import { Upload } from './schemas/file.schema';
 
 
 
 dotenv.config()
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }],),
+  imports: [CloudinaryModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema },{ name: Upload.name, schema: UserSchema }],),
     
 
       JwtModule.register({
