@@ -9,13 +9,15 @@ import {
   UseInterceptors, 
   UploadedFile, 
   BadRequestException, 
-  Headers 
+  Headers, 
+  UseGuards
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LoginDto } from './dto/login.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
@@ -68,6 +70,7 @@ export class UserController {
   }
 
   // Upload or update profile picture for an authenticated user
+  @UseGuards(AuthGuard()) // Ensure this guard is applied to protect the endpoint
   @Post('upload')
   @UseInterceptors(FileInterceptor('file')) // Ensure this matches the form-data key
   async uploadProfilePicture(
