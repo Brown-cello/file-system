@@ -63,7 +63,7 @@ export class UserService {
         }
       }
   
-      const userPayload = { id: userDetails.id, email: userDetails.email, profilePictureUrl: userDetails.profilePictureUrl };
+      const userPayload = { id: userDetails.id, email: userDetails.email, profilePictureUrl: userDetails.profilePictureUrl, role: userDetails.role };
       return {
         userId: userDetails.id,
         userEmail: userDetails.email,
@@ -95,6 +95,7 @@ export class UserService {
         id: user._id,
         email: user.email,
         profilePictureUrl: user.profilePictureUrl || null,
+        role: user.role
       
       };
     } catch (error) {
@@ -105,7 +106,7 @@ export class UserService {
 
   // Sign in a user
   async signIn(payload: LoginDto) {
-    const { email, password } = payload;
+    const { email, password, } = payload;
     const user = await this.userModel.findOne({ email: payload.email }).select('+password');
 
     if (!user) {
@@ -120,6 +121,7 @@ export class UserService {
     const token = await this.jwtService.signAsync({
       email: user.email,
       id: user.id,
+      role: user.role,
     });
 
     return {
@@ -243,5 +245,33 @@ export class UserService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return { message: `User with ID ${id} deleted successfully` };
+  }
+
+  async blockUser(id: string): Promise<{ message: string }> {
+    const user = await this.userModel.findById(id); // Use `findById` to query by MongoDB `_id`
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    // Set the user's `isBlocked` status to true
+    user.IsBlocked = true;
+    await user.save(); // Save the updated user document
+  
+    return { message: `User with ID ${id} has been blocked.` };
+  }
+  
+  async unblockUser(id: string): Promise<{ message: string }> {
+    const user = await this.userModel.findById(id); // Use `findById` to query by MongoDB `_id`
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    // Set the user's `isBlocked` status to false
+    user.IsBlocked = false;
+    await user.save(); // Save the updated user document
+  
+    return { message: `User with ID ${id} has been unblocked.` };
   }
 }

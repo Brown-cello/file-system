@@ -23,11 +23,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       throw new UnauthorizedException('Login first to access this endpoint');
     }
-
-    return {
-      _id: user._id,
-      email: user.email,
-      profilePictureUrl: user.profilePictureUrl,
-    };
+    if (user.IsBlocked === true) {
+      throw new UnauthorizedException(`This user ${user.userName} is blocked`);
+    }
+    return user;
   }
 }

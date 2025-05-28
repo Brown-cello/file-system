@@ -18,6 +18,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../Auth/guard/role';
+import { RolesGuard } from 'src/Auth/guard/role.guard';
 
 @Controller('user')
 export class UserController {
@@ -86,5 +88,19 @@ export class UserController {
     } catch (error) {
       throw new BadRequestException(`File upload failed: ${error.message}`);
     }
+  }
+
+  
+  @Patch(':id/block')
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles('admin') // Only admin can block users
+  async blockUser(@Param('id') id: string) {
+    return this.userService.blockUser(id);
+  }
+
+  @Patch(':id/unblock')
+  @Roles('admin') // Only admin can unblock users
+  async unblockUser(@Param('id') id: string) {
+    return this.userService.unblockUser(id);
   }
 }
