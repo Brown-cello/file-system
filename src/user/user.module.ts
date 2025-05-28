@@ -6,8 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as dotenv from 'dotenv'
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { CloudinaryModule } from 'src/cloudinary/coudinary.module';
+import { CloudinaryModule } from '../cloudinary/coudinary.module';
 import { Upload } from './schemas/file.schema';
+import { JwtStrategy } from '../Auth/jwt.strategy';
 
 
 
@@ -30,7 +31,7 @@ dotenv.config()
   })
   ],
   controllers: [UserController],
-providers: [UserService
+providers: [UserService,JwtStrategy
 ],
 
   exports: [UserService, JwtModule, PassportModule, MongooseModule],

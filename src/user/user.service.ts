@@ -75,26 +75,33 @@ export class UserService {
       throw error;
     }
   }
-
-  // Authenticate user using JWT
-  private async authenticateUser(headers: any): Promise<User> {
+  async user(headers: any): Promise<any> {
     const authorizationHeader = headers.authorization;
     if (!authorizationHeader) {
       throw new UnauthorizedException('Invalid or missing Bearer token');
     }
-
+  
     const token = authorizationHeader.replace('Bearer ', '');
     try {
-      const decoded = this.jwtService.verify(token);
-      const user = await this.userModel.findById(decoded.id);
+      const decoded = this.jwtService.verify(token); // No need to manually pass secret if configured properly
+      const id = decoded["id"];
+  
+      const user = await this.userModel.findById(id);
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-      return user;
+  
+      return {
+        id: user._id,
+        email: user.email,
+        profilePictureUrl: user.profilePictureUrl || null,
+      
+      };
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
   }
+  
 
   // Sign in a user
   async signIn(payload: LoginDto) {
@@ -185,7 +192,7 @@ export class UserService {
 
   // Update profile picture for an existing user
   async updateProfilePicture(file: Express.Multer.File, headers: any): Promise<any> {
-    const user = await this.authenticateUser(headers);
+    const user = await this.user(headers);
     const profilePictureUrl = await this.uploadProfilePicture(file, user.id);
 
     return {
