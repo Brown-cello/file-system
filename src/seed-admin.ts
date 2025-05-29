@@ -30,4 +30,4 @@ export async function seedAdmin() {
   await app.close();
 }
 
-seedAdmin();
+
