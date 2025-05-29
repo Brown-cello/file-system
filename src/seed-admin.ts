@@ -22,9 +22,9 @@ async function seedAdmin() {
       password: process.env.ADMIN_PASSWORD || 'SecureAdmin123!',
       role: userRole.ADMIN, // Cast 'admin' to userRole
     });
-    console.log('✅ Admin seeded successfully.');
+    console.log('Admin seeded successfully.');
   } else {
-    console.log('ℹ️ Admin already exists.');
+    console.log('Admin already exists.');
   }
 
   await app.close();
