@@ -7,7 +7,7 @@ import { userRole } from './user/enum/user.role.enum';
 
 dotenv.config();
 
-async function seedAdmin() {
+export async function seedAdmin() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const userService = app.get(UserService);
 
