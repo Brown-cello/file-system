@@ -92,6 +92,8 @@ export class UserController {
   }
 
   
+
+  
   @Patch(':id/block')
   @UseGuards(AuthGuard(), RolesGuard)
   @Roles('admin') // Only admin can block users
