@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
-import { SeedModule } from './SEED/seed.module';
 
 @Module({
-   imports: [UserModule,SeedModule,
+   imports: [UserModule,
         ConfigModule.forRoot({
       isGlobal: true
     }), 
