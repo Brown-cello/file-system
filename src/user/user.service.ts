@@ -5,8 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import * as argon2 from 'argon2';
-import { LoginDto } from './dto/login.dto';
 import { Readable } from 'stream';
 import { v2 as cloudinary } from 'cloudinary';
 import { Upload } from './schemas/file.schema';
@@ -21,60 +19,7 @@ export class UserService {
     private uploadModel: Model<Upload>,
   ) {}
 
-  // Create a new user and optionally upload a profile picture
-  async create(payload: CreateUserDto, file?: Express.Multer.File) {
-    try {
-      // Validate required fields
-      if (!payload.email || !payload.password) {
-        throw new BadRequestException('Email and password are required.');
-      }
-  
-      const existingUser = await this.userModel.findOne({ email: payload.email });
-      if (existingUser) {
-        throw new ConflictException('Email already exists, login or input a new email address');
-      }
-  
-      const { email, password, ...rest } = payload;
-  
-      // Hash the password
-      const hashPassword = await argon2.hash(password);
-  
-      const userDetails = await this.userModel.create({
-        email,
-        password: hashPassword,
-        ...rest,
-      });
-  
-      // Debugging: Log the file to ensure it is received
-      console.log('Uploaded file:', file);
-  
-      // If a profile picture is provided, upload it
-      if (file) {
-        try {
-          const profilePictureUrl = await this.uploadProfilePicture(file, userDetails.id);
-          userDetails.profilePictureUrl = profilePictureUrl;
-  
-          // Save the updated user details
-          await userDetails.save();
-          console.log('Profile picture URL saved:', profilePictureUrl);
-        } catch (error) {
-          console.error('Error uploading profile picture:', error.message);
-          throw new BadRequestException('Failed to upload profile picture.');
-        }
-      }
-  
-      const userPayload = { id: userDetails.id, email: userDetails.email, profilePictureUrl: userDetails.profilePictureUrl, role: userDetails.role };
-      return {
-        userId: userDetails.id,
-        userEmail: userDetails.email,
-        profilePictureUrl: userDetails.profilePictureUrl || null,
-        access_token: await this.jwtService.signAsync(userPayload),
-      };
-    } catch (error) {
-      console.error('Error creating user:', error.message);
-      throw error;
-    }
-  }
+
   async user(headers: any): Promise<any> {
     const authorizationHeader = headers.authorization;
     if (!authorizationHeader) {
@@ -102,45 +47,6 @@ export class UserService {
       throw new UnauthorizedException('Invalid token');
     }
   }
-  
-
-  // Sign in a user
-  async signIn(payload: LoginDto) {
-    const { email, password, } = payload;
-    const user = await this.userModel.findOne({ email: payload.email }).select('+password');
-
-    if (!user) {
-      throw new HttpException('No email found', 400);
-    }
-
-    const checkedPassword = await this.verifyPassword(user.password, password);
-    if (!checkedPassword) {
-      throw new HttpException('Password incorrect', 400);
-    }
-
-    const token = await this.jwtService.signAsync({
-      email: user.email,
-      id: user.id,
-      role: user.role,
-    });
-
-    return {
-      success: true,
-      userToken: token,
-    };
-  }
-
-  // Verify password
-  async verifyPassword(hashedPassword: string, plainPassword: string): Promise<boolean> {
-    try {
-      return await argon2.verify(hashedPassword, plainPassword);
-    } catch (err) {
-      console.log(err.message);
-      return false;
-    }
-  }
-
-  // Upload or update a profile picture
   async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<string> {
     if (!file) {
       throw new BadRequestException('No file provided.');

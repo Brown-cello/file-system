@@ -8,8 +8,8 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-"start": "node --max-old-space-size=4096 dist/main",
-  "seed": "node --max-old-space-size=4096 dist/seed-admin.js",
+    "start": "node --max-old-space-size=4096 dist/main",
+    "seed": "node --max-old-space-size=4096 dist/seed-admin.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
