@@ -5,12 +5,10 @@ import { SeedService } from "./seed.service";
 export class SeedController {
   constructor(private readonly seedService: SeedService) {}
 
-  @Post('admins')
-  async seedAdmins(@Body() admins: Array<{ userName: string; email: string; password: string }>) {
-    const seededAdmins = await this.seedService.seedAdmins(admins);
-    return {
-      message: "Admins seeded successfully",
-      seededAdmins,
-    };
+ 
+  @Post('seed-admins')
+  async seedAdmins() {
+    return await this.seedService.seedDefaultAdmins();
+
   }
 }

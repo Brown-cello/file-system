@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { Readable } from 'stream';
 import { v2 as cloudinary } from 'cloudinary';
-import { Upload } from './schemas/file.schema';
 
 @Injectable()
 export class UserService {
@@ -15,8 +14,7 @@ export class UserService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private jwtService: JwtService,
-    @InjectModel(Upload.name)
-    private uploadModel: Model<Upload>,
+   
   ) {}
 
 
