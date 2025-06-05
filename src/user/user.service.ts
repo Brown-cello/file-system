@@ -45,7 +45,7 @@ export class UserService {
       throw new UnauthorizedException('Invalid token');
     }
   }
-  async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<string> {
+ async uploadProfilePicture(file: Express.Multer.File, userId: string): Promise<string> {
     if (!file) {
       throw new BadRequestException('No file provided.');
     }
@@ -96,25 +96,7 @@ export class UserService {
     });
   }
 
-  // Update profile picture for an existing user
-  async updateProfilePicture(file: Express.Multer.File, headers: any): Promise<any> {
-    const user = await this.user(headers);
-    const profilePictureUrl = await this.uploadProfilePicture(file, user.id);
-
-    return {
-      message: 'Profile picture updated successfully',
-      profilePictureUrl,
-    };
-  }
-
-  async findEmail(email: string) {
-    const mail = await this.userModel.findOne({ email })
-    if (!mail) {
-     throw new UnauthorizedException()
-    }
-    return mail;
-   }
-
+ 
   // Find all users
   findAll() {
     return this.userModel.find();

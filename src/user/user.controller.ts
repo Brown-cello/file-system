@@ -54,22 +54,21 @@ export class UserController {
 
   // Upload or update profile picture for an authenticated user
   @UseGuards(AuthGuard()) // Ensure this guard is applied to protect the endpoint
-  @Post('upload')
+  @Post('upload/:id')
   @UseInterceptors(FileInterceptor('file')) // Ensure this matches the form-data key
-  async uploadProfilePicture(
-    @UploadedFile() file: Express.Multer.File,
-    @Headers() headers: any,
-  ) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Param('id') id: string) {
     if (!file) {
       throw new BadRequestException('No file received. Please upload a valid file.');
     }
 
     try {
-      return await this.userService.updateProfilePicture(file, headers);
+      return await this.userService.uploadProfilePicture(file,id);
     } catch (error) {
       throw new BadRequestException(`File upload failed: ${error.message}`);
     }
   }
+
+  
 
   
 
