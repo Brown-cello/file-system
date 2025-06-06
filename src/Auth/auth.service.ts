@@ -69,18 +69,7 @@ export class AuthService {
   
    })
   }
-  
-  async logout(@Req() req: Request, @Res() res: Response) {
-  const clearCookie = res.clearCookie('isAuthenticated');
-  
-  const response = res.send(` user successfully logout`)
-  
-  return {
-   clearCookie,
-   response
-   }
-   }
-
+ 
   
 
    async verifyPassword(hashedPassword: string, plainPassword: string,): Promise<boolean> {

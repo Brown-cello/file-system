@@ -22,10 +22,6 @@ export class AuthController {
     return await this.authService.signIn(loginDto, res);
   }
 
-  // Logout a user
-  @Post('logout')
-  @HttpCode(200)
-  async logout(@Req() req: Request, @Res() res: Response) {
-    return await this.authService.logout(req, res);
-  }
+  
+  
 }
