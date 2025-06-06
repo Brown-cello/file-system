@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { Readable } from 'stream';
 import { v2 as cloudinary } from 'cloudinary';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -113,17 +114,28 @@ export class UserService {
 
   // Update a user
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
-    if (!updatedUser) {
+    // Find the user by ID
+    const user = await this.userModel.findById(id);
+    if (!user) {
       throw new NotFoundException('User not found');
     }
+  
+    // Check if the password is being updated
+    if (updateUserDto.password) {
+      // Hash the new password
+      updateUserDto.password = await argon2.hash(updateUserDto.password);
+    }
+  
+    // Update the user with the new data
+    Object.assign(user, updateUserDto);
+    const updatedUser = await user.save(); // Triggers pre-save hooks if defined
+  
     return {
       statusCode: 200,
       message: 'User updated successfully',
       data: updatedUser,
     };
   }
-
   // Remove a user
   async remove(id: string) {
     const result = await this.userModel.findByIdAndDelete(id);
