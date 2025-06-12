@@ -125,7 +125,10 @@ export class UserService {
       // Hash the new password
       updateUserDto.password = await argon2.hash(updateUserDto.password);
     }
-  
+    const existingUser = await this.userModel.findOne({ email: updateUserDto.email });
+  if( existingUser ){
+    throw new ConflictException(`User with email ${updateUserDto.email} already exists`);
+  }
     // Update the user with the new data
     Object.assign(user, updateUserDto);
     const updatedUser = await user.save(); // Triggers pre-save hooks if defined
